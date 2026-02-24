@@ -1,0 +1,5 @@
+@EndUserText.label: 'Service Definition for Sales Order'
+define service ZCIT_SO_SD {
+  expose ZCIT_SO_CNH_083;
+  expose ZCIT_SO_CNI_083;
+}

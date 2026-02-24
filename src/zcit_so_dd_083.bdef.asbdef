@@ -1,0 +1,103 @@
+//unmanaged implementation in class zbp_cit_so_dd_083 unique;
+//strict ( 2 );
+//
+//define behavior for ZCIT_SO_DD_083 //alias <alias_name>
+////late numbering
+//lock master
+//authorization master ( instance )
+////etag master <field_name>
+//{
+//  create ( authorization : global );
+//  update;
+//  delete;
+//  field ( readonly ) Salesdocument;
+//  association _SALESITEM { create; }
+//}
+//
+//define behavior for ZCIT_SO_DDITM_083 //alias <alias_name>
+////late numbering
+//lock dependent by _salesHeader
+//authorization dependent by _salesHeader
+////etag master <field_name>
+//{
+//  update;
+//  delete;
+//  field ( readonly ) Salesdocument, Salesitemnumber;
+//  association _salesHeader;
+//}
+
+unmanaged implementation in class  zip_mp_sale_i unique;
+strict ( 2 );
+with draft;
+
+define behavior for ZCIT_SO_DD_083 alias SalesOrderHdr
+ implementation in class zbp_cit_so_dd_083  unique
+draft table zso_hdr_083_d
+lock master total etag LocalLastChangedAt
+authorization master ( instance )
+etag master LocalLastChangedAt
+{
+  create ( authorization : global );
+  update;
+  delete;
+
+  draft action Edit;
+  draft action Resume;
+  draft determine action Prepare;
+  draft action Activate optimized;
+  draft action Discard;
+
+  field ( mandatory : create ) Salesdocument;
+  field ( readonly : update ) Salesdocument;
+  field ( readonly ) LocalLastChangedAt;
+
+  association _SALESITEM { create; with draft; }
+
+  mapping for ZCIT_SO_HDR_083
+  {
+    Salesdocument = salesdocument;
+    SalesdocumentType = salesdocumenttype;
+    OrderReason = orderreason;
+    SalesOrganization = salesorganization;
+    DistributionChannel = distributionchannel;
+    Division = division;
+    SalesOffice = salesoffice;
+    SalesGroup = salesgroup;
+    NetPrice = netprice;
+    Currency = currency;
+    LocalCreatedBy = local_created_by;
+    LocalCreatedAt = local_created_at;
+    LocalLastChangedBy = local_last_changed_by;
+    LocalLastChangedAt = local_last_changed_at;
+  }
+}
+
+define behavior for ZCIT_SO_DDITM_083 alias SalesOrderItm
+ implementation in class zip_mp_sale_itm unique
+draft table zso_itm_083_d
+lock dependent by _salesHeader
+authorization dependent by _salesHeader
+etag master LocalLastChangedAt
+{
+  update;
+  delete;
+
+  field ( readonly : update, mandatory : create ) Salesitemnumber;
+  field ( readonly ) Salesdocument;
+
+  association _salesHeader { with draft; }
+
+  mapping for ZCIT_SO_ITM_083
+  {
+    Salesdocument = salesdocument;
+    Salesitemnumber = salesitemnumber;
+    Material = material;
+    Plant = plant;
+    Quantity = quantity;
+    Quantityunits = quantityunits;
+    LocalCreatedBy = local_created_by;
+    LocalCreatedAt = local_created_at;
+    LocalLastChangedBy = local_last_changed_by;
+    LocalLastChangedAt = local_last_changed_at;
+  }
+}
